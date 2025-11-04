@@ -12,12 +12,14 @@ Usage: spreadsheet-extractor [OPTIONS] <COMMAND>
 Commands:
   show-config  Show the current configuration
   fetch-sheet  Fetch google spreadsheet using range
+  push-sheet   Fetch google spreadsheet using range
   help         Print this message or the help of the given subcommand(s)
 
 Options:
-  -c, --config <CONFIG>  Path to a config file
-  -h, --help             Print help
-  -V, --version          Print version
+  -c, --config <CONFIG>        Path to a config file
+  -l, --log-level <LOG_LEVEL>  [default: warn]
+  -h, --help                   Print help
+  -V, --version                Print version
 ```
 
 ## Configuration

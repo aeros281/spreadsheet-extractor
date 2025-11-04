@@ -5,6 +5,7 @@ mod commands;
 mod config;
 mod format;
 mod formatter;
+mod reader;
 mod sheet_utils;
 
 use anyhow::Result;
@@ -31,6 +32,7 @@ struct Cli {
 register_commands! {
     ShowConfig
     FetchSheet
+    PushSheet
 }
 
 fn main() -> Result<()> {

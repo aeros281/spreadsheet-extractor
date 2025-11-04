@@ -16,6 +16,7 @@ macro_rules! re_export {
 re_export! {
     show_config
     fetch_sheet
+    push_sheet
 }
 
 pub trait Command {
