@@ -1,6 +1,12 @@
-use std::io;
-
-use crate::{config::Config, format::Format, formatter::json::convert_to_json, sheet_utils};
+use crate::{
+    config::Config,
+    format::Format,
+    formatter::{
+        csv::print_csv,
+        json::{convert_to_json, print_json},
+    },
+    sheet_utils,
+};
 
 use super::Command;
 use anyhow::Result;
@@ -29,22 +35,19 @@ impl Command for FetchSheet {
         result.map_err(anyhow::Error::from).map(|(_, res)| {
             if let Some(val) = res.values {
                 match self.format {
-                   Format::Json => {
+                    Format::Json => {
                         let parsed_data = convert_to_json(&val);
-                       println!("{}", serde_json::to_string_pretty(&parsed_data).unwrap());
-                   } 
+                        print_json(&mut std::io::stdout(), &parsed_data).unwrap();
+                    }
 
-                   Format::CSV => {
-                       let mut wtr = csv::Writer::from_writer(io::stdout());
+                    Format::CSV => {
+                        print_csv(&val, std::io::stdout()).unwrap();
+                    }
 
-                       for row in &val {
-                           let value_rows = row.into_iter().map(|v| v.as_str().unwrap());
-                           wtr.write_record(value_rows).unwrap();
-                       }
-
-                       wtr.flush().unwrap();
-                   }
-                   }
+                    Format::Table => {
+                        println!("not support table format right now")
+                    }
+                }
             }
             ()
         })

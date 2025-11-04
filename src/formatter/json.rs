@@ -1,3 +1,5 @@
+use std::io;
+
 use serde_json::{Map, Value, json};
 
 pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Value {
@@ -34,4 +36,9 @@ pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Value {
 
     // 5. Convert the Vec<Value> into a single Value::Array.
     json_array.into()
+}
+
+pub fn print_json<W: io::Write>(writer: &mut W, val: &Value) -> io::Result<()> {
+    writeln!(writer, "{}", serde_json::to_string_pretty(&val)?)?;
+    Ok(())
 }

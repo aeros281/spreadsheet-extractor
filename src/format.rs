@@ -8,6 +8,7 @@ pub enum Format {
     #[default]
     Json,
     CSV,
+    Table,
 }
 
 impl fmt::Display for Format {
@@ -15,6 +16,7 @@ impl fmt::Display for Format {
         let format_name = match self {
             Format::CSV => "csv",
             Format::Json => "json",
+            Format::Table => "table",
         };
 
         write!(f, "{}", format_name)
