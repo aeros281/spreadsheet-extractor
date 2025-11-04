@@ -22,11 +22,11 @@ tokio = { version = "1.48.0", features = ["full"] }
 google-sheets4 = "6.0.0"
 hyper = "1.7.0"
 hyper-rustls = "0.27.7"
-shellexpand = "3.1.1"
 rustls = { version = "0.23.34", features = ["ring"] }
 csv = "1.4.0"
 colog = "1.4.0"
 log = "0.4.28"
+pathexpand = "0.1.1"
 
 [profile.release]
 strip = true
