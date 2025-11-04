@@ -1,6 +1,5 @@
 use serde_json::{Map, Value, json};
 
-
 pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Value {
     // Handle the edge case of empty data.
     if data.is_empty() {

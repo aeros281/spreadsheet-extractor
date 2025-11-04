@@ -1,8 +1,8 @@
 mod commands;
 mod config;
 mod format;
-mod sheet_utils;
 mod formatter;
+mod sheet_utils;
 
 use anyhow::Result;
 use clap::{Parser, command};

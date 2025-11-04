@@ -35,8 +35,8 @@ impl Config {
     }
 
     pub fn parse_from_cfgdir() -> Result<Self> {
-        let dirs = dirs::config_dir()
-            .map(|d| d.join(package_name!()))
+        let dirs = dirs::home_dir()
+            .map(|d| d.join(".config").join(package_name!()))
             .ok_or_else(|| anyhow::anyhow!("could not resolve project directories"))?;
 
         Ok(Figment::new()

@@ -21,13 +21,13 @@ Options:
   -V, --version          Print version
 ```
 
-
 ## Configuration
 
-Configuration can be provided as `TOML`, `YML` or `JSON` file either in the current working directory as `fw.*` or in the users home config directory, which maps to the following directories depending on the OS.
+Configuration can be provided as `TOML`, `YML` or `JSON` file either in the current working directory as `spreadsheet-extractor.*` or in the users home config directory, which maps to the following directories depending on the OS.
+
 - Linux: `$HOME/.config/spreadsheet-extractor/config.*`
-- macOS: `$HOME/Library/Application Support/spreadsheet-extractor/config.*`
-- Windows: `%APPDATA%/zekro/spreadsheet-extractor/config.*`
+- macOS: `$HOME/.config/spreadsheet-extractor/config.*`
+- Windows: `C:\Users\<username>\.config\spreadsheet-extractor\config.*`
 
 You can also pass a configuration via the `--config` parameter.
 
@@ -39,10 +39,11 @@ client_secret_path = '~/.config/spreadsheet-extractor/secret.json'
 token_storage_path = '~/.config/spreadsheet-extractor/tokencache.json'
 ```
 
-
 ## Install
 
 You can either download the latest release builds form the [Releases page](https://github.com/aeros281/spreadsheet-extractor/releases) or you can install it using cargo install.
+
 ```
 cargo install --git https://github.com/aeros281/spreadsheet-extractor
 ```
+
