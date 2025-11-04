@@ -6,23 +6,37 @@ spreadsheet-extractor
 
 ```
 $ spreadsheet-extractor --help
-< TODO: insert help here >
+
+spreadsheet-extractor
+
+Usage: spreadsheet-extractor [OPTIONS] <COMMAND>
+
+Commands:
+  fetch-sheet  Fetch google spreadsheet using range
+  help         Print this message or the help of the given subcommand(s)
+
+Options:
+  -c, --config <CONFIG>  Path to a config file
+  -h, --help             Print help
+  -V, --version          Print version
 ```
 
 
 ## Configuration
 
 Configuration can be provided as `TOML`, `YML` or `JSON` file either in the current working directory as `fw.*` or in the users home config directory, which maps to the following directories depending on the OS.
-- Linux: `$HOME/.config/fw/config.*`
-- macOS: `$HOME/Library/Application Support/de.zekro.fw/config.*`
-- Windows: `%APPDATA%/zekro/fw/config.*`
+- Linux: `$HOME/.config/spreadsheet-extractor/config.*`
+- macOS: `$HOME/Library/Application Support/spreadsheet-extractor/config.*`
+- Windows: `%APPDATA%/zekro/spreadsheet-extractor/config.*`
 
 You can also pass a configuration via the `--config` parameter.
 
 Following, you can see an example configuration in `TOML` format.
 
 ```toml
-< TODO: insert config example here >
+[google]
+client_secret_path = '~/.config/spreadsheet-extractor/secret.json'
+token_storage_path = '~/.config/spreadsheet-extractor/tokencache.json'
 ```
 
 
