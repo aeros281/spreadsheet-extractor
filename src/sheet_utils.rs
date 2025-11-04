@@ -8,7 +8,6 @@ use crate::config::{Config, Google};
 use google_sheets4::common;
 use google_sheets4::hyper_util::client::legacy::connect::HttpConnector;
 use hyper_rustls::HttpsConnector;
-use pathexpand::expand;
 use sheets4::Result;
 use sheets4::api::ValueRange;
 use sheets4::{Sheets, hyper_rustls, hyper_util, yup_oauth2};
@@ -65,5 +64,5 @@ pub async fn build_hub(config: &Config) -> Result<Sheets<HttpsConnector<HttpConn
 }
 
 fn build_path(val: &str) -> PathBuf {
-    expand(val).unwrap_or(PathBuf::from(val))
+    simple_expand_tilde::expand_tilde(val).unwrap_or(PathBuf::from(val))
 }

@@ -1206,18 +1206,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pathexpand"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1d835ffcf4af969f36c628e76ab1479e7eec8dadfa5a39debab1c7decb637da"
-dependencies = [
- "libc",
- "regex",
- "syscalls",
- "thiserror",
-]
-
-[[package]]
 name = "pear"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1606,17 +1594,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_repr"
-version = "0.1.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "175ee3e80ae9982737ca543e96133087cbd9a485eecc3bc4de9c1a37b47ea59c"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "serde_spanned"
 version = "0.6.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1685,6 +1662,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "simple-expand-tilde"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e7a57abc1c7fd6ee791dc1f4cf8048dd74b571467792a6c040aa812d6ab15c5"
+
+[[package]]
 name = "slab"
 version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1720,10 +1703,10 @@ dependencies = [
  "hyper",
  "hyper-rustls",
  "log",
- "pathexpand",
  "rustls",
  "serde",
  "serde_json",
+ "simple-expand-tilde",
  "tokio",
 ]
 
@@ -1765,16 +1748,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "syscalls"
-version = "0.6.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43d0e35dc7d73976a53c7e6d7d177ef804a0c0ee774ec77bcc520c2216fd7cbe"
-dependencies = [
- "serde",
- "serde_repr",
 ]
 
 [[package]]
