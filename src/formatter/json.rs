@@ -2,10 +2,10 @@ use std::io;
 
 use serde_json::{Map, Value, json};
 
-pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Value {
+pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Vec<Map<String, Value>> {
     // Handle the edge case of empty data.
     if data.is_empty() {
-        return json!([]); // Return an empty JSON array
+        return vec![]; // Return an empty JSON array
     }
 
     // 1. Get the headers from the first row.
@@ -35,10 +35,10 @@ pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Value {
     }
 
     // 5. Convert the Vec<Value> into a single Value::Array.
-    json_array.into()
+    json_array
 }
 
-pub fn print_json<W: io::Write>(writer: &mut W, val: &Value) -> io::Result<()> {
+pub fn print_json<W: io::Write>(writer: &mut W, val: &Vec<Map<String, Value>>) -> io::Result<()> {
     writeln!(writer, "{}", serde_json::to_string_pretty(&val)?)?;
     Ok(())
 }
