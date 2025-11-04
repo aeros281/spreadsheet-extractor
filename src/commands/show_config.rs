@@ -12,8 +12,13 @@ impl Command for ShowConfig {
     fn run(&self, config: &Config) -> Result<()> {
         println!("========== Configuration ==========");
         println!("config path: {:?}", Config::get_cfgdir().unwrap());
-        println!("client_secret_path = {}", config.google.client_secret_path);
-        println!("token_storage_path = {}", config.google.token_storage_path);
+
+        if let Some(google_config) = &config.google {
+            println!("client_secret_path = {}", google_config.client_secret_path);
+            println!("token_storage_path = {}", google_config.token_storage_path);
+        } else {
+            println!("No google configuration presented");
+        }
 
         Ok(())
     }

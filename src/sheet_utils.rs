@@ -3,7 +3,7 @@ extern crate hyper;
 
 use std::path::PathBuf;
 
-use crate::config::Config;
+use crate::config::{Config, Google};
 
 use google_sheets4::common;
 use sheets4::Result;
@@ -15,8 +15,13 @@ pub async fn get_sheet_data(
     sheet_id: &str,
     range: &str,
 ) -> Result<(common::Response, ValueRange)> {
-    let service_account_path = build_path(&config.google.client_secret_path);
-    let token_storage_path = build_path(&config.google.token_storage_path);
+    let google_config: &Google = &config
+        .google
+        .as_ref()
+        .expect("No google configuration found");
+
+    let service_account_path = build_path(&google_config.client_secret_path);
+    let token_storage_path = build_path(&google_config.token_storage_path);
     let secret = yup_oauth2::read_application_secret(service_account_path).await
         .expect("Cannot find the application secret, please make sure to set the config for google.client_secret_path");
     let auth = yup_oauth2::InstalledFlowAuthenticator::builder(

@@ -19,7 +19,7 @@ macro_rules! local_config_name {
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub google: Google,
+    pub google: Option<Google>,
 }
 
 #[derive(Deserialize)]
