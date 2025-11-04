@@ -17,6 +17,14 @@ clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 dirs = "6"
 figment = { version = "0.10", features = ["json", "yaml", "toml", "env"] }
+serde_json = "1.0.145"
+tokio = { version = "1.48.0", features = ["full"] }
+google-sheets4 = "6.0.0"
+hyper = "1.7.0"
+hyper-rustls = "0.27.7"
+shellexpand = "3.1.1"
+rustls = { version = "0.23.34", features = ["ring"] }
+csv = "1.4.0"
 
 [profile.release]
 strip = true

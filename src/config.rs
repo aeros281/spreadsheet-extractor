@@ -1,6 +1,6 @@
 use anyhow::Result;
-use figment::providers::{Format, Json, Toml, Yaml};
 use figment::Figment;
+use figment::providers::{Format, Json, Toml, Yaml};
 use serde::Deserialize;
 use std::ops::Deref;
 use std::path::Path;
@@ -18,7 +18,15 @@ macro_rules! local_config_name {
 }
 
 #[derive(Deserialize)]
-pub struct Config {}
+pub struct Config {
+    pub google: Google,
+}
+
+#[derive(Deserialize)]
+pub struct Google {
+    pub client_secret_path: String,
+    pub token_storage_path: String,
+}
 
 impl Config {
     pub fn parse<T: AsRef<Path>>(dir: Option<T>) -> Result<Self> {

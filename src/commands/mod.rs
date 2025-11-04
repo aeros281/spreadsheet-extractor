@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use crate::config::Config;
+
 macro_rules! re_export {
     ( $( $md:tt )+ ) => {
         $(
@@ -12,11 +14,11 @@ macro_rules! re_export {
 // List the names of your command modules to re-export them
 // in this module.
 re_export! {
-    hello
+    fetch_sheet
 }
 
 pub trait Command {
-    fn run(&self) -> Result<()>;
+    fn run(&self, config: &Config) -> Result<()>;
 }
 
 #[macro_export]
