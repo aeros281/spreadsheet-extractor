@@ -3,7 +3,7 @@ use figment::Figment;
 use figment::providers::{Format, Json, Toml, Yaml};
 use serde::Deserialize;
 use std::ops::Deref;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 macro_rules! package_name {
     () => {
@@ -29,14 +29,16 @@ pub struct Google {
 }
 
 impl Config {
+    pub fn get_cfgdir() -> Option<PathBuf> {
+        dirs::home_dir().map(|d| d.join(".config").join(package_name!()))
+    }
+
     pub fn parse<T: AsRef<Path>>(dir: Option<T>) -> Result<Self> {
         dir.map(Self::parse_from_file)
             .unwrap_or_else(Self::parse_from_cfgdir)
     }
-
     pub fn parse_from_cfgdir() -> Result<Self> {
-        let dirs = dirs::home_dir()
-            .map(|d| d.join(".config").join(package_name!()))
+        let dirs = Self::get_cfgdir()
             .ok_or_else(|| anyhow::anyhow!("could not resolve project directories"))?;
 
         Ok(Figment::new()

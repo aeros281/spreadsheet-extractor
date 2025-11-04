@@ -7,11 +7,10 @@ spreadsheet-extractor
 ```
 $ spreadsheet-extractor --help
 
-spreadsheet-extractor
-
 Usage: spreadsheet-extractor [OPTIONS] <COMMAND>
 
 Commands:
+  show-config  Show the current configuration
   fetch-sheet  Fetch google spreadsheet using range
   help         Print this message or the help of the given subcommand(s)
 

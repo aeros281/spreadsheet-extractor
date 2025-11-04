@@ -22,6 +22,7 @@ struct Cli {
 
 // List the names of your sub commands here.
 register_commands! {
+    ShowConfig
     FetchSheet
 }
 

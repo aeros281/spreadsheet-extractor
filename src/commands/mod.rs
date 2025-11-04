@@ -14,6 +14,7 @@ macro_rules! re_export {
 // List the names of your command modules to re-export them
 // in this module.
 re_export! {
+    show_config
     fetch_sheet
 }
 
