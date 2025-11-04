@@ -13,4 +13,3 @@ pub fn print_csv<W: io::Write>(val: &Vec<Vec<Value>>, writer: W) -> csv::Result<
     wtr.flush().unwrap();
     Ok(())
 }
-

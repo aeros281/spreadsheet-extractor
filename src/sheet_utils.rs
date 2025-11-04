@@ -22,6 +22,7 @@ pub async fn get_sheet_data(
 
     let service_account_path = build_path(&google_config.client_secret_path);
     let token_storage_path = build_path(&google_config.token_storage_path);
+
     let secret = yup_oauth2::read_application_secret(service_account_path).await
         .expect("Cannot find the application secret, please make sure to set the config for google.client_secret_path");
     let auth = yup_oauth2::InstalledFlowAuthenticator::builder(

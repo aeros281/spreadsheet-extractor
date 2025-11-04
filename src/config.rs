@@ -52,6 +52,7 @@ impl Config {
     }
 
     pub fn parse_from_file<T: AsRef<Path>>(path: T) -> Result<Self> {
+        debug!("local configuration detected");
         let ext = path.as_ref().extension().unwrap_or_default();
         let mut figment = Figment::new();
 

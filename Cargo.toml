@@ -25,6 +25,8 @@ hyper-rustls = "0.27.7"
 shellexpand = "3.1.1"
 rustls = { version = "0.23.34", features = ["ring"] }
 csv = "1.4.0"
+colog = "1.4.0"
+log = "0.4.28"
 
 [profile.release]
 strip = true
