@@ -6,6 +6,9 @@ OAuth setup and Sheets API calls.
 - [src/sheet_utils.rs](../src/sheet_utils.rs)
 
 ## Auth
+
+> For instructions on creating the OAuth 2.0 Desktop app client ID and downloading the secret JSON, see the **Creating a Google OAuth 2.0 Client ID** section in [README.md](../README.md).
+
 `build_hub(&Config)`:
 - Reads `config.google.client_secret_path` (installed-app OAuth client secret JSON).
 - Uses `yup_oauth2::InstalledFlowAuthenticator` with `InstalledFlowReturnMethod::Interactive` — the user completes the OAuth flow in a browser on first run.

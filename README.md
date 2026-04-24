@@ -140,7 +140,25 @@ client_secret_path = '~/.config/spreadsheet-extractor/secret.json'
 token_storage_path = '~/.config/spreadsheet-extractor/tokencache.json'
 ```
 
-`client_secret_path` must point to a Google OAuth 2.0 **installed application** client secret JSON downloaded from the Google Cloud Console. On first run the tool will open a browser to complete the OAuth flow; the token is then cached at `token_storage_path` for subsequent runs.
+`client_secret_path` must point to a Google OAuth 2.0 **Desktop app** client secret JSON downloaded from the Google Cloud Console. On first run the tool will open a browser to complete the OAuth flow; the token is then cached at `token_storage_path` for subsequent runs.
+
+### Creating a Google OAuth 2.0 Client ID
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project.
+2. Navigate to **APIs & Services → Library**, search for **Google Sheets API**, and click **Enable**.
+3. Navigate to **APIs & Services → OAuth consent screen**:
+   - Choose **External** (or **Internal** if using a Google Workspace org).
+   - Fill in the required app name and support email fields, then save.
+   - Under **Data Access**, add the following scopes:
+     - `https://www.googleapis.com/auth/drive`
+     - `https://www.googleapis.com/auth/drive.metadata.readonly`
+     - `https://www.googleapis.com/auth/documents`
+   - Under **Audience → Test users**, add the Google account you will authenticate with (required while the app is in *Testing* status).
+4. Navigate to **APIs & Services → Credentials**, click **+ Create Credentials → OAuth client ID**:
+   - Application type: **Desktop app**
+   - Give it a name (e.g. `spreadsheet-extractor`) and click **Create**.
+5. Click **Download JSON** on the newly created credential. Save the file somewhere permanent (e.g. `~/.config/spreadsheet-extractor/secret.json`).
+6. Point `client_secret_path` in your config file at that downloaded JSON.
 
 ## Install
 
