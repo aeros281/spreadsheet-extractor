@@ -3,7 +3,7 @@
 Output format selection and CSV input helpers.
 
 ## Files
-- [src/format.rs](../src/format.rs) — `Format` enum (`Json`, `CSV`, `Table`), used by `clap::ValueEnum` on subcommand `--format` flags. `Table` is not implemented and prints a placeholder.
+- [src/format.rs](../src/format.rs) — `Format` enum (`Json`, `Csv`, `Table`), used by `clap::ValueEnum` on subcommand `--format` flags. `Table` is not implemented and prints a placeholder.
 - [src/formatter/mod.rs](../src/formatter/mod.rs) — re-exports `csv` and `json`.
 - [src/formatter/csv.rs](../src/formatter/csv.rs) — `print_csv(values, writer)`.
 - [src/formatter/json.rs](../src/formatter/json.rs) — `convert_to_json(values)` and `print_json(writer, parsed)`.
