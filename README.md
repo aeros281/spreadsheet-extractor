@@ -177,3 +177,21 @@ Download the latest release from the [Releases page](https://github.com/aeros281
 ```
 cargo install --git https://github.com/aeros281/spreadsheet-extractor
 ```
+
+### Install from local source
+
+Clone the repository and install directly from the local directory:
+
+```bash
+git clone https://github.com/aeros281/spreadsheet-extractor
+cd spreadsheet-extractor
+cargo install --path .
+```
+
+Or if you already have the repository cloned, run from inside it:
+
+```bash
+cargo install --path .
+```
+
+The binary will be placed in `~/.cargo/bin/spreadsheet-extractor` (make sure `~/.cargo/bin` is on your `PATH`).

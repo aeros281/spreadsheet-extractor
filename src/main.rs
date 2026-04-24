@@ -39,6 +39,7 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     let mut clog = colog::default_builder();
     clog.filter(None, cli.log_level);
+    clog.format_module_path(true);
     clog.init();
 
     trace!("Trying to init crypto default provider");
