@@ -12,6 +12,7 @@ use crate::{
 use super::Command;
 use anyhow::{Result, anyhow};
 use clap::Args;
+use log::{debug, trace, warn};
 use serde_json::Value;
 
 /// Fetch google spreadsheet using range
@@ -124,6 +125,11 @@ fn fill_repeated_columns(values: &mut [Vec<Value>], cols: &[usize]) {
 
 impl Command for FetchSheet {
     fn run(&self, config: &Config) -> Result<()> {
+        debug!(
+            "fetch-sheet: sheet_id={} gid={} range={} format={:?}",
+            self.sheet_id, self.gid, self.range, self.format
+        );
+
         let rt = tokio::runtime::Runtime::new()?;
 
         let repeat_cols: Vec<usize> = self
@@ -132,38 +138,54 @@ impl Command for FetchSheet {
             .map(|c| column_letter_to_index(c))
             .collect::<Result<_>>()?;
 
+        if !repeat_cols.is_empty() {
+            trace!("repeat columns (0-indexed): {:?}", repeat_cols);
+        }
+
         let (_, res) = rt.block_on(async {
             let sheet_name =
                 sheet_utils::resolve_gid_to_name(config, &self.sheet_id, self.gid).await?;
+            debug!("resolved gid {} → sheet name {:?}", self.gid, sheet_name);
             let full_range = sheet_utils::a1_range(&sheet_name, &self.range);
+            debug!("fetching range: {full_range}");
             sheet_utils::get_sheet_data(config, &self.sheet_id, &full_range)
                 .await
                 .map_err(anyhow::Error::from)
         })?;
 
-        if let Some(mut val) = res.values {
-            if !repeat_cols.is_empty() {
-                fill_repeated_columns(&mut val, &repeat_cols);
+        match res.values {
+            None => {
+                warn!("sheet returned no values for the requested range");
             }
+            Some(mut val) => {
+                debug!("received {} row(s)", val.len());
 
-            let data = if let Some(spec) = &self.headers {
-                let col_offset = range_col_offset(&self.range)?;
-                let col_headers = parse_headers(spec, col_offset)?;
-                apply_headers(&val, &col_headers)
-            } else {
-                val
-            };
+                if !repeat_cols.is_empty() {
+                    trace!("filling repeated columns");
+                    fill_repeated_columns(&mut val, &repeat_cols);
+                }
 
-            match self.format {
-                Format::Json => {
-                    let parsed_data = convert_to_json(&data);
-                    print_json(&mut std::io::stdout(), &parsed_data).unwrap();
-                }
-                Format::Csv => {
-                    print_csv(&data, std::io::stdout()).unwrap();
-                }
-                Format::Table => {
-                    print_table(&data, std::io::stdout()).unwrap();
+                let data = if let Some(spec) = &self.headers {
+                    let col_offset = range_col_offset(&self.range)?;
+                    trace!("parsing headers spec={spec:?} col_offset={col_offset}");
+                    let col_headers = parse_headers(spec, col_offset)?;
+                    debug!("applying {} header mapping(s)", col_headers.len());
+                    apply_headers(&val, &col_headers)
+                } else {
+                    val
+                };
+
+                match self.format {
+                    Format::Json => {
+                        let parsed_data = convert_to_json(&data);
+                        print_json(&mut std::io::stdout(), &parsed_data).unwrap();
+                    }
+                    Format::Csv => {
+                        print_csv(&data, std::io::stdout()).unwrap();
+                    }
+                    Format::Table => {
+                        print_table(&data, std::io::stdout()).unwrap();
+                    }
                 }
             }
         }

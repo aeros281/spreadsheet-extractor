@@ -4,6 +4,7 @@ extern crate hyper;
 use std::path::PathBuf;
 
 use crate::config::{Config, Google};
+use log::{debug, trace, warn};
 
 use csv::{ReaderBuilder, StringRecord};
 use google_sheets4::api::{ClearValuesRequest, ClearValuesResponse};
@@ -20,6 +21,7 @@ pub async fn resolve_gid_to_name(
     spreadsheet_id: &str,
     gid: i32,
 ) -> anyhow::Result<String> {
+    trace!("resolve_gid_to_name: spreadsheet_id={spreadsheet_id} gid={gid}");
     let hub = build_hub(config).await.map_err(anyhow::Error::from)?;
     let (_, spreadsheet) = hub
         .spreadsheets()
@@ -27,15 +29,19 @@ pub async fn resolve_gid_to_name(
         .doit()
         .await
         .map_err(anyhow::Error::from)?;
-    spreadsheet
-        .sheets
-        .unwrap_or_default()
+    let sheets = spreadsheet.sheets.unwrap_or_default();
+    debug!("spreadsheet has {} sheet(s)", sheets.len());
+    let name = sheets
         .into_iter()
         .find_map(|s| {
             let props = s.properties?;
             if props.sheet_id == Some(gid) { props.title } else { None }
-        })
-        .ok_or_else(|| anyhow::anyhow!("no sheet with gid {gid} in spreadsheet {spreadsheet_id}"))
+        });
+    match &name {
+        Some(n) => debug!("gid {gid} resolved to {n:?}"),
+        None => warn!("no sheet with gid {gid} found in spreadsheet {spreadsheet_id}"),
+    }
+    name.ok_or_else(|| anyhow::anyhow!("no sheet with gid {gid} in spreadsheet {spreadsheet_id}"))
 }
 
 /// Builds an A1-notation range string with the sheet name properly quoted.
@@ -49,8 +55,10 @@ pub async fn get_sheet_data(
     sheet_id: &str,
     range: &str,
 ) -> Result<(common::Response, ValueRange)> {
+    trace!("get_sheet_data: sheet_id={sheet_id} range={range}");
     let hub = build_hub(config).await?;
     let encoded_range = range.replace('/', "%2F");
+    debug!("values_get range={encoded_range}");
     hub.spreadsheets()
         .values_get(sheet_id, &encoded_range)
         .doit()
@@ -62,8 +70,10 @@ pub async fn clear_tab(
     sheet_id: &str,
     tab_name: &str,
 ) -> Result<ClearValuesResponse> {
+    debug!("clear_tab: sheet_id={sheet_id} tab={tab_name:?}");
     let hub = build_hub(config).await?;
     let encoded_tab = tab_name.replace('/', "%2F");
+    trace!("values_clear tab={encoded_tab}");
     hub.spreadsheets()
         .values_clear(ClearValuesRequest::default(), sheet_id, &encoded_tab)
         .doit()
@@ -77,6 +87,7 @@ pub async fn write_page(
     tab_name: &str,
     path: &str,
 ) -> anyhow::Result<()> {
+    debug!("write_page: sheet_id={sheet_id} tab={tab_name:?} file={path}");
     clear_tab(config, sheet_id, tab_name).await?;
 
     let mut rdr = ReaderBuilder::new().has_headers(false).from_path(path)?;
@@ -85,7 +96,13 @@ pub async fn write_page(
         .records()
         .collect::<std::result::Result<Vec<StringRecord>, csv::Error>>()?;
 
+    debug!("uploading {} row(s) to tab {:?}", records.len(), tab_name);
+    if records.is_empty() {
+        warn!("CSV file {path:?} contains no rows — tab will remain empty after clear");
+    }
+
     let encoded_tab = tab_name.replace('/', "%2F");
+    trace!("values_append tab={encoded_tab}");
     let req = ValueRange {
         major_dimension: None,
         range: Some(tab_name.to_string()),
