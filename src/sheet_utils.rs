@@ -51,7 +51,10 @@ pub async fn get_sheet_data(
 ) -> Result<(common::Response, ValueRange)> {
     let hub = build_hub(config).await?;
     let encoded_range = range.replace('/', "%2F");
-    hub.spreadsheets().values_get(sheet_id, &encoded_range).doit().await
+    hub.spreadsheets()
+        .values_get(sheet_id, &encoded_range)
+        .doit()
+        .await
 }
 
 pub async fn clear_tab(
