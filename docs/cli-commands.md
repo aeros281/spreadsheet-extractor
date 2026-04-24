@@ -17,9 +17,10 @@ Binary entrypoint and subcommand dispatch.
 ## `fetch-sheet` args
 - `sheet_id` — spreadsheet ID.
 - `gid` — numeric sheet tab GID (visible in the URL as `&gid=...`).
-- `range` — cell range, e.g. `G4:Q7`.
+- `range` — cell range, e.g. `G4:Q7`. When `--headers` is used, omit the header row from the range.
 - `--format` — `json` (default), `csv`, `table`.
 - `--repeat-columns A,C,...` — columns whose empty cells inherit the previous row's value (applied after fetch, before output).
+- `--headers A:HeaderForA,C:HeaderForC` — explicit column-to-header mapping. Only the listed columns appear in the output. The column letters are relative to the fetched data (A = first column of the range). No header row should be included in the range when this flag is set.
 
 ## `push-sheet` args
 - `input_file` — CSV file to upload.

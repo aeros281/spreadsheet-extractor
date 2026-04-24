@@ -39,6 +39,8 @@ Arguments:
 Options:
   -f, --format <FORMAT>                  Output format [default: json] [possible values: json, csv, table]
       --repeat-columns <REPEAT_COLUMNS>  Columns whose empty cells inherit the previous row's value (e.g. A,C)
+      --headers <HEADERS>                Column-to-header mapping, e.g. "A:Name,C:Age". Only listed columns
+                                         are included. When set, omit the header row from the range.
   -h, --help                             Print help
 ```
 
@@ -72,6 +74,18 @@ spreadsheet-extractor fetch-sheet \
   B2:F50 \
   --repeat-columns A,B
 ```
+
+Fetch only specific columns with explicit header names — the range starts at row 2 (no header row) and only columns B and D are kept:
+
+```bash
+spreadsheet-extractor fetch-sheet \
+  1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms \
+  812345678 \
+  B2:F50 \
+  --headers "B:ProductName,D:Price"
+```
+
+Column letters in `--headers` are absolute spreadsheet column letters (matching the range). Only the listed columns appear in the output; any other columns in the range are discarded.
 
 > **Finding the spreadsheet ID and GID**
 > Open the sheet in your browser. The URL looks like:

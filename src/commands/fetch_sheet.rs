@@ -20,7 +20,7 @@ pub struct FetchSheet {
     sheet_id: String,
     // The numeric GID of the sheet tab (visible in the URL as &gid=...)
     gid: i32,
-    // The cell range, e.g. G4:Q7
+    // The cell range, e.g. G4:Q7 (omit the header row when --headers is used)
     range: String,
     // Output format
     #[arg(short, long, default_value = "json")]
@@ -28,6 +28,10 @@ pub struct FetchSheet {
     /// Columns (by letter, e.g. "A,C") whose empty cells inherit the previous row's value
     #[arg(long, value_delimiter = ',')]
     repeat_columns: Vec<String>,
+    /// Column-to-header mapping, e.g. "A:Name,C:Age". Only listed columns are included;
+    /// the range must not contain a header row when this is set.
+    #[arg(long)]
+    headers: Option<String>,
 }
 
 fn column_letter_to_index(s: &str) -> Result<usize> {
@@ -44,6 +48,53 @@ fn column_letter_to_index(s: &str) -> Result<usize> {
         idx = idx * 26 + (c as usize - 'A' as usize + 1);
     }
     Ok(idx - 1)
+}
+
+fn range_col_offset(range: &str) -> Result<usize> {
+    let col_str: String = range.chars().take_while(|c| c.is_ascii_alphabetic()).collect();
+    if col_str.is_empty() {
+        return Err(anyhow!("cannot parse start column from range: {range}"));
+    }
+    column_letter_to_index(&col_str)
+}
+
+fn parse_headers(s: &str, col_offset: usize) -> Result<Vec<(usize, String)>> {
+    let mut cols = Vec::new();
+    for part in s.split(',') {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+        let (col_letter, header_name) = part
+            .split_once(':')
+            .ok_or_else(|| anyhow!("invalid header spec '{part}', expected format COL:Name"))?;
+        let abs_idx = column_letter_to_index(col_letter)?;
+        let idx = abs_idx.checked_sub(col_offset).ok_or_else(|| {
+            anyhow!("column '{col_letter}' is before the range start")
+        })?;
+        cols.push((idx, header_name.to_string()));
+    }
+    cols.sort_by_key(|(idx, _)| *idx);
+    Ok(cols)
+}
+
+fn apply_headers(rows: &[Vec<Value>], headers: &[(usize, String)]) -> Vec<Vec<Value>> {
+    let mut result = Vec::with_capacity(rows.len() + 1);
+    result.push(
+        headers
+            .iter()
+            .map(|(_, name)| Value::String(name.clone()))
+            .collect(),
+    );
+    for row in rows {
+        result.push(
+            headers
+                .iter()
+                .map(|(idx, _)| row.get(*idx).cloned().unwrap_or(Value::String(String::new())))
+                .collect(),
+        );
+    }
+    result
 }
 
 fn fill_repeated_columns(values: &mut [Vec<Value>], cols: &[usize]) {
@@ -93,13 +144,22 @@ impl Command for FetchSheet {
             if !repeat_cols.is_empty() {
                 fill_repeated_columns(&mut val, &repeat_cols);
             }
+
+            let data = if let Some(spec) = &self.headers {
+                let col_offset = range_col_offset(&self.range)?;
+                let col_headers = parse_headers(spec, col_offset)?;
+                apply_headers(&val, &col_headers)
+            } else {
+                val
+            };
+
             match self.format {
                 Format::Json => {
-                    let parsed_data = convert_to_json(&val);
+                    let parsed_data = convert_to_json(&data);
                     print_json(&mut std::io::stdout(), &parsed_data).unwrap();
                 }
                 Format::Csv => {
-                    print_csv(&val, std::io::stdout()).unwrap();
+                    print_csv(&data, std::io::stdout()).unwrap();
                 }
                 Format::Table => {
                     println!("not support table format right now")
