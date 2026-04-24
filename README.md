@@ -24,7 +24,7 @@ Options:
 
 ### fetch-sheet
 
-Fetch a range from a Google Sheets tab and print it as JSON or CSV.
+Fetch a range from a Google Sheets tab and print it as JSON, CSV, or a formatted table.
 
 ```
 $ spreadsheet-extractor fetch-sheet --help
@@ -63,6 +63,16 @@ spreadsheet-extractor fetch-sheet \
   0 \
   A1:D10 \
   --format csv
+```
+
+Same fetch but rendered as a human-readable table (first row is used as the header):
+
+```bash
+spreadsheet-extractor fetch-sheet \
+  1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms \
+  0 \
+  A1:D10 \
+  --format table
 ```
 
 Fetch a range where column A contains merged/grouped labels (empty cells should repeat the value from the row above):

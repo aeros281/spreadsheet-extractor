@@ -2,7 +2,7 @@
 
 Entry point for AI agents working on `spreadsheet-extractor` — a Rust CLI that reads/writes Google Sheets ranges.
 
-last-synced-commit: 8d78e0737277ee85043fc54574dc4b35484b6621
+last-synced-commit: 9b85ccf0d2a2198f2809e97187191e3b25185c15
 
 ## How to use this file
 

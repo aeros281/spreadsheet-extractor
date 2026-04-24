@@ -4,6 +4,7 @@ use crate::{
     formatter::{
         csv::print_csv,
         json::{convert_to_json, print_json},
+        table::print_table,
     },
     sheet_utils,
 };
@@ -162,7 +163,7 @@ impl Command for FetchSheet {
                     print_csv(&data, std::io::stdout()).unwrap();
                 }
                 Format::Table => {
-                    println!("not support table format right now")
+                    print_table(&data, std::io::stdout()).unwrap();
                 }
             }
         }
