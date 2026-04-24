@@ -1,18 +1,18 @@
-use crate::{config::Config, format::Format, sheet_utils::write_page};
+use crate::{config::Config, format::Format, sheet_utils};
 
 use super::Command;
 use anyhow::Result;
 use clap::Args;
 
-/// Fetch google spreadsheet using range
+/// Push a CSV file to a google spreadsheet tab
 #[derive(Args)]
 pub struct PushSheet {
     // The input file
     input_file: String,
-    // The id of the sheet
+    // The id of the spreadsheet
     sheet_id: String,
-    // Tab name
-    tab_name: String,
+    // The numeric GID of the sheet tab (visible in the URL as &gid=...)
+    gid: i32,
     // Output format
     #[arg(short, long, default_value = "csv")]
     format: Format,
@@ -23,7 +23,9 @@ impl Command for PushSheet {
         let rt = tokio::runtime::Runtime::new()?;
 
         rt.block_on(async {
-            write_page(config, &self.sheet_id, &self.tab_name, &self.input_file).await
+            let sheet_name =
+                sheet_utils::resolve_gid_to_name(config, &self.sheet_id, self.gid).await?;
+            sheet_utils::write_page(config, &self.sheet_id, &sheet_name, &self.input_file).await
         })?;
 
         Ok(())

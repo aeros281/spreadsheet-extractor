@@ -7,14 +7,14 @@ use serde::Serialize;
 pub enum Format {
     #[default]
     Json,
-    CSV,
+    Csv,
     Table,
 }
 
 impl fmt::Display for Format {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let format_name = match self {
-            Format::CSV => "csv",
+            Format::Csv => "csv",
             Format::Json => "json",
             Format::Table => "table",
         };

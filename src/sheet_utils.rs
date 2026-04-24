@@ -14,13 +14,44 @@ use sheets4::Result;
 use sheets4::api::ValueRange;
 use sheets4::{Sheets, hyper_rustls, hyper_util, yup_oauth2};
 
+/// Resolves a sheet GID to its title by calling spreadsheets.get.
+pub async fn resolve_gid_to_name(
+    config: &Config,
+    spreadsheet_id: &str,
+    gid: i32,
+) -> anyhow::Result<String> {
+    let hub = build_hub(config).await.map_err(anyhow::Error::from)?;
+    let (_, spreadsheet) = hub
+        .spreadsheets()
+        .get(spreadsheet_id)
+        .doit()
+        .await
+        .map_err(anyhow::Error::from)?;
+    spreadsheet
+        .sheets
+        .unwrap_or_default()
+        .into_iter()
+        .find_map(|s| {
+            let props = s.properties?;
+            if props.sheet_id == Some(gid) { props.title } else { None }
+        })
+        .ok_or_else(|| anyhow::anyhow!("no sheet with gid {gid} in spreadsheet {spreadsheet_id}"))
+}
+
+/// Builds an A1-notation range string with the sheet name properly quoted.
+pub fn a1_range(sheet_name: &str, range: &str) -> String {
+    let escaped = sheet_name.replace('\'', "''");
+    format!("'{escaped}'!{range}")
+}
+
 pub async fn get_sheet_data(
     config: &Config,
     sheet_id: &str,
     range: &str,
 ) -> Result<(common::Response, ValueRange)> {
     let hub = build_hub(config).await?;
-    hub.spreadsheets().values_get(sheet_id, range).doit().await
+    let encoded_range = range.replace('/', "%2F");
+    hub.spreadsheets().values_get(sheet_id, &encoded_range).doit().await
 }
 
 pub async fn clear_tab(
@@ -29,8 +60,9 @@ pub async fn clear_tab(
     tab_name: &str,
 ) -> Result<ClearValuesResponse> {
     let hub = build_hub(config).await?;
+    let encoded_tab = tab_name.replace('/', "%2F");
     hub.spreadsheets()
-        .values_clear(ClearValuesRequest::default(), sheet_id, tab_name)
+        .values_clear(ClearValuesRequest::default(), sheet_id, &encoded_tab)
         .doit()
         .await
         .map(|(_, res)| res)
@@ -50,6 +82,7 @@ pub async fn write_page(
         .records()
         .collect::<std::result::Result<Vec<StringRecord>, csv::Error>>()?;
 
+    let encoded_tab = tab_name.replace('/', "%2F");
     let req = ValueRange {
         major_dimension: None,
         range: Some(tab_name.to_string()),
@@ -67,7 +100,7 @@ pub async fn write_page(
     let hub = build_hub(config).await?;
 
     hub.spreadsheets()
-        .values_append(req, sheet_id, tab_name)
+        .values_append(req, sheet_id, &encoded_tab)
         .value_input_option("USER_ENTERED")
         .include_values_in_response(false)
         .doit()

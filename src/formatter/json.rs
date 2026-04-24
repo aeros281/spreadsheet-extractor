@@ -2,7 +2,7 @@ use std::io;
 
 use serde_json::{Map, Value, json};
 
-pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Vec<Map<String, Value>> {
+pub fn convert_to_json(data: &[Vec<Value>]) -> Vec<Map<String, Value>> {
     // Handle the edge case of empty data.
     if data.is_empty() {
         return vec![]; // Return an empty JSON array
@@ -31,7 +31,7 @@ pub fn convert_to_json(data: &Vec<Vec<Value>>) -> Vec<Map<String, Value>> {
 
         // Add the completed object to our array.
         // `.into()` converts the Map<String, Value> into a Value::Object.
-        json_array.push(object_map.into());
+        json_array.push(object_map);
     }
 
     // 5. Convert the Vec<Value> into a single Value::Array.
