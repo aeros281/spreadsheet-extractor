@@ -12,7 +12,7 @@ use crate::{
 use super::Command;
 use anyhow::{Result, anyhow};
 use clap::Args;
-use log::{debug, trace, warn};
+use tracing::{debug, trace, warn};
 use serde_json::Value;
 
 /// Fetch google spreadsheet using range

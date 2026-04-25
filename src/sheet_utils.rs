@@ -4,7 +4,7 @@ extern crate hyper;
 use std::path::PathBuf;
 
 use crate::config::{Config, Google};
-use log::{debug, trace, warn};
+use tracing::{debug, trace, warn};
 
 use csv::{ReaderBuilder, StringRecord};
 use google_sheets4::api::{ClearValuesRequest, ClearValuesResponse};
@@ -16,12 +16,12 @@ use sheets4::api::ValueRange;
 use sheets4::{Sheets, hyper_rustls, hyper_util, yup_oauth2};
 
 /// Resolves a sheet GID to its title by calling spreadsheets.get.
+#[tracing::instrument(skip(config), err)]
 pub async fn resolve_gid_to_name(
     config: &Config,
     spreadsheet_id: &str,
     gid: i32,
 ) -> anyhow::Result<String> {
-    trace!("resolve_gid_to_name: spreadsheet_id={spreadsheet_id} gid={gid}");
     let hub = build_hub(config).await.map_err(anyhow::Error::from)?;
     let (_, spreadsheet) = hub
         .spreadsheets()
@@ -31,12 +31,10 @@ pub async fn resolve_gid_to_name(
         .map_err(anyhow::Error::from)?;
     let sheets = spreadsheet.sheets.unwrap_or_default();
     debug!("spreadsheet has {} sheet(s)", sheets.len());
-    let name = sheets
-        .into_iter()
-        .find_map(|s| {
-            let props = s.properties?;
-            if props.sheet_id == Some(gid) { props.title } else { None }
-        });
+    let name = sheets.into_iter().find_map(|s| {
+        let props = s.properties?;
+        if props.sheet_id == Some(gid) { props.title } else { None }
+    });
     match &name {
         Some(n) => debug!("gid {gid} resolved to {n:?}"),
         None => warn!("no sheet with gid {gid} found in spreadsheet {spreadsheet_id}"),
@@ -50,12 +48,12 @@ pub fn a1_range(sheet_name: &str, range: &str) -> String {
     format!("'{escaped}'!{range}")
 }
 
+#[tracing::instrument(skip(config), err)]
 pub async fn get_sheet_data(
     config: &Config,
     sheet_id: &str,
     range: &str,
 ) -> Result<(common::Response, ValueRange)> {
-    trace!("get_sheet_data: sheet_id={sheet_id} range={range}");
     let hub = build_hub(config).await?;
     let encoded_range = range.replace('/', "%2F");
     debug!("values_get range={encoded_range}");
@@ -65,12 +63,12 @@ pub async fn get_sheet_data(
         .await
 }
 
+#[tracing::instrument(skip(config), err)]
 pub async fn clear_tab(
     config: &Config,
     sheet_id: &str,
     tab_name: &str,
 ) -> Result<ClearValuesResponse> {
-    debug!("clear_tab: sheet_id={sheet_id} tab={tab_name:?}");
     let hub = build_hub(config).await?;
     let encoded_tab = tab_name.replace('/', "%2F");
     trace!("values_clear tab={encoded_tab}");
@@ -81,13 +79,13 @@ pub async fn clear_tab(
         .map(|(_, res)| res)
 }
 
+#[tracing::instrument(skip(config), err)]
 pub async fn write_page(
     config: &Config,
     sheet_id: &str,
     tab_name: &str,
     path: &str,
 ) -> anyhow::Result<()> {
-    debug!("write_page: sheet_id={sheet_id} tab={tab_name:?} file={path}");
     clear_tab(config, sheet_id, tab_name).await?;
 
     let mut rdr = ReaderBuilder::new().has_headers(false).from_path(path)?;
@@ -129,6 +127,7 @@ pub async fn write_page(
     Ok(())
 }
 
+#[tracing::instrument(skip(config), err)]
 pub async fn build_hub(config: &Config) -> Result<Sheets<HttpsConnector<HttpConnector>>> {
     let google_config: &Google = config
         .google

@@ -3,7 +3,7 @@ use crate::{config::Config, format::Format, sheet_utils};
 use super::Command;
 use anyhow::Result;
 use clap::Args;
-use log::debug;
+use tracing::debug;
 
 /// Push a CSV file to a google spreadsheet tab
 #[derive(Args)]

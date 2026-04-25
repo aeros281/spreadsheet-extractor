@@ -4,6 +4,7 @@ use figment::providers::{Format, Json, Toml, Yaml};
 use serde::Deserialize;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
+use tracing::debug;
 
 macro_rules! package_name {
     () => {
