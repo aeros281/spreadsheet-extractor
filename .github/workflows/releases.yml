@@ -71,6 +71,8 @@ jobs:
 
   create_release:
     name: Create GitHub Release
+    permissions:
+      contents: write
     needs: build_artifacts
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
