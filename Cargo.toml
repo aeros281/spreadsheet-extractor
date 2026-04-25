@@ -1,6 +1,6 @@
 [package]
 name = "spreadsheet-extractor"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2024"
 authors = ["Anh Le Tuan Tran <tranletuananh1992@gmail.com>"]
 description = "spreadsheet-extractor"
