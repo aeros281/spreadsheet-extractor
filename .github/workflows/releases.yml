@@ -13,9 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os_name: FreeBSD-x86_64
-            os: ubuntu-latest
-            target: x86_64-unknown-freebsd
           - os_name: Linux-x86_64
             os: ubuntu-latest
             target: x86_64-unknown-linux-musl
