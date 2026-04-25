@@ -22,17 +22,18 @@ Follow [Semantic Versioning](https://semver.org):
 | New subcommand or flag (backwards-compatible) | minor (`x.Y.0`) |
 | Bug fix, refactor, docs only | patch (`x.y.Z`) |
 
-### 2. Update `Cargo.toml`
+### 2. Update `Cargo.toml` and `Cargo.lock`
 
 ```toml
 [package]
 version = "X.Y.Z"
 ```
 
-Commit with:
+Then run `cargo build` (or any cargo command) so `Cargo.lock` is updated to reflect the new version. Stage both files and commit:
 
-```
-chore(release): prepare for vX.Y.Z
+```bash
+git add Cargo.toml Cargo.lock
+git commit -m "chore(release): prepare for vX.Y.Z"
 ```
 
 This commit is automatically skipped by git-cliff (matched by `chore(release): prepare for` in `cliff.toml`), so it won't appear in the changelog.
