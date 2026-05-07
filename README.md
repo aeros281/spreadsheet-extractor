@@ -105,7 +105,7 @@ Column letters in `--headers` are absolute spreadsheet column letters (matching 
 
 ### push-sheet
 
-Clear a Google Sheets tab and append rows from a local CSV file.
+Clear a Google Sheets tab and append rows from a local CSV or JSON file.
 
 ```
 $ spreadsheet-extractor push-sheet --help
@@ -134,6 +134,18 @@ spreadsheet-extractor push-sheet \
 ```
 
 The tab is cleared before the new rows are appended.
+
+Upload `report.json` (an array of objects) to the same tab:
+
+```bash
+spreadsheet-extractor push-sheet \
+  report.json \
+  1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms \
+  812345678 \
+  --format json
+```
+
+JSON input must be an array of objects. The keys of the first object become the header row; missing keys in subsequent objects are written as empty cells.
 
 ## Configuration
 

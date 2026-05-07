@@ -51,7 +51,7 @@ The tag must match `v[0-9]+.[0-9]+.[0-9]+*` to trigger the workflow.
 
 The workflow runs two jobs:
 
-1. **`build_artifacts`** — cross-compiles the binary for all 9 targets in parallel and uploads them as GitHub Actions artifacts. Targets: FreeBSD x86\_64, Linux x86\_64/aarch64/arm/riscv64 (musl), Windows x86\_64/aarch64, macOS x86\_64/aarch64.
+1. **`build_artifacts`** — cross-compiles the binary for all 8 targets in parallel and uploads them as GitHub Actions artifacts. Targets: Linux x86\_64/aarch64/arm/riscv64 (musl), Windows x86\_64/aarch64, macOS x86\_64/aarch64.
 
 2. **`create_release`** — after all builds succeed, checks out the full git history, runs `git cliff --latest` to generate release notes from commits since the previous tag, then creates a **draft** GitHub Release with the binaries attached and the changelog as the body.
 

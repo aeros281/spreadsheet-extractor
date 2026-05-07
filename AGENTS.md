@@ -2,7 +2,7 @@
 
 Entry point for AI agents working on `spreadsheet-extractor` — a Rust CLI that reads/writes Google Sheets ranges.
 
-last-synced-commit: 9b85ccf0d2a2198f2809e97187191e3b25185c15
+last-synced-commit: a36d59aee814dd4f41ac65dfbb2184764d9dbd55
 
 ## How to use this file
 
@@ -30,7 +30,7 @@ Load only the domain doc(s) relevant to the user's prompt. Do not read every doc
 
 ## Project-wide conventions
 
-- Edition 2024, `anyhow::Result` in command entry points, `log`/`colog` for logging.
+- Edition 2024, `anyhow::Result` in command entry points, `tracing`/`tracing-subscriber` for logging.
 - Async is confined to [src/sheet_utils.rs](src/sheet_utils.rs); commands drive it with a fresh `tokio` runtime.
 - Release profile uses LTO + `opt-level = "s"` + `strip = true` — avoid adding heavyweight dependencies without reason.
 

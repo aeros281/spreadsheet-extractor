@@ -30,4 +30,4 @@ Binary entrypoint and subcommand dispatch.
 
 ## Global flags
 - `-c/--config <path>` — explicit config file (otherwise cfgdir lookup).
-- `-l/--log-level <level>` — `log::LevelFilter`, defaults to `warn`.
+- `-l/--log-level <level>` — `tracing_subscriber::filter::LevelFilter`, defaults to `warn`.
