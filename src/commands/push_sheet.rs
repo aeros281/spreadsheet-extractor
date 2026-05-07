@@ -33,7 +33,27 @@ impl Command for PushSheet {
                 sheet_utils::resolve_gid_to_name(config, &self.sheet_id, self.gid).await?;
             debug!("resolved gid {} → sheet name {:?}", self.gid, sheet_name);
             debug!("writing {:?} to sheet {:?}", self.input_file, sheet_name);
-            sheet_utils::write_page(config, &self.sheet_id, &sheet_name, &self.input_file).await
+            match self.format {
+                Format::Json => {
+                    sheet_utils::write_page_json(
+                        config,
+                        &self.sheet_id,
+                        &sheet_name,
+                        &self.input_file,
+                    )
+                    .await
+                }
+                Format::Csv => {
+                    sheet_utils::write_page(
+                        config,
+                        &self.sheet_id,
+                        &sheet_name,
+                        &self.input_file,
+                    )
+                    .await
+                }
+                Format::Table => anyhow::bail!("table format is not supported for push-sheet"),
+            }
         })?;
 
         Ok(())

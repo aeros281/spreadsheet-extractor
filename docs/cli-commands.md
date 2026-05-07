@@ -23,10 +23,10 @@ Binary entrypoint and subcommand dispatch.
 - `--headers A:HeaderForA,C:HeaderForC` — explicit column-to-header mapping. Only the listed columns appear in the output. The column letters are relative to the fetched data (A = first column of the range). No header row should be included in the range when this flag is set.
 
 ## `push-sheet` args
-- `input_file` — CSV file to upload.
+- `input_file` — file to upload.
 - `sheet_id` — spreadsheet ID.
 - `gid` — numeric sheet tab GID.
-- `--format` — `csv` (default); only CSV is implemented.
+- `--format` — `csv` (default) or `json`. JSON input must be an array of objects; keys of the first object become the header row. `table` is not supported.
 
 ## Global flags
 - `-c/--config <path>` — explicit config file (otherwise cfgdir lookup).

@@ -99,21 +99,69 @@ pub async fn write_page(
         warn!("CSV file {path:?} contains no rows — tab will remain empty after clear");
     }
 
+    let rows = records
+        .into_iter()
+        .map(|s| {
+            s.iter()
+                .map(|s| serde_json::Value::String(s.to_string()))
+                .collect()
+        })
+        .collect();
+
+    upload_rows(config, sheet_id, tab_name, rows).await
+}
+
+#[tracing::instrument(skip(config), err)]
+pub async fn write_page_json(
+    config: &Config,
+    sheet_id: &str,
+    tab_name: &str,
+    path: &str,
+) -> anyhow::Result<()> {
+    clear_tab(config, sheet_id, tab_name).await?;
+
+    let content = std::fs::read_to_string(path)?;
+    let records: Vec<serde_json::Map<String, serde_json::Value>> =
+        serde_json::from_str(&content)?;
+
+    debug!("uploading {} row(s) to tab {:?}", records.len(), tab_name);
+    if records.is_empty() {
+        warn!("JSON file {path:?} contains no rows — tab will remain empty after clear");
+        return Ok(());
+    }
+
+    let headers: Vec<String> = records[0].keys().cloned().collect();
+    let mut rows: Vec<Vec<serde_json::Value>> = Vec::with_capacity(records.len() + 1);
+    rows.push(
+        headers
+            .iter()
+            .map(|h| serde_json::Value::String(h.clone()))
+            .collect(),
+    );
+    for record in &records {
+        rows.push(
+            headers
+                .iter()
+                .map(|h| json_to_cell(record.get(h).cloned().unwrap_or(serde_json::Value::Null)))
+                .collect(),
+        );
+    }
+
+    upload_rows(config, sheet_id, tab_name, rows).await
+}
+
+async fn upload_rows(
+    config: &Config,
+    sheet_id: &str,
+    tab_name: &str,
+    rows: Vec<Vec<serde_json::Value>>,
+) -> anyhow::Result<()> {
     let encoded_tab = tab_name.replace('/', "%2F");
     trace!("values_append tab={encoded_tab}");
     let req = ValueRange {
         major_dimension: None,
         range: Some(tab_name.to_string()),
-        values: Some(
-            records
-                .into_iter()
-                .map(|s| {
-                    s.iter()
-                        .map(|s| serde_json::Value::String(s.to_string()))
-                        .collect()
-                })
-                .collect(),
-        ),
+        values: Some(rows),
     };
     let hub = build_hub(config).await?;
 
@@ -125,6 +173,16 @@ pub async fn write_page(
         .await?;
 
     Ok(())
+}
+
+fn json_to_cell(v: serde_json::Value) -> serde_json::Value {
+    match v {
+        serde_json::Value::Null => serde_json::Value::String(String::new()),
+        serde_json::Value::Object(_) | serde_json::Value::Array(_) => {
+            serde_json::Value::String(v.to_string())
+        }
+        other => other,
+    }
 }
 
 #[tracing::instrument(skip(config), err)]
